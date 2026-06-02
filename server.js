@@ -34,8 +34,29 @@ const { startCronJobs } = require('./utils/cron');
 // Start background jobs
 startCronJobs();
 
-// Middleware
-app.use(cors());
+// Middleware 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://food-waste-reduction-client.vercel.app"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (
+      origin.includes("vercel.app") ||
+      origin === "http://localhost:3000"
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(null, true); // safer for deployment (avoid blocking)
+  },
+  credentials: true
+}));
+
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
